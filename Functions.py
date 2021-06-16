@@ -39,6 +39,14 @@ def get_token(request_session, headers):
     except:
         return False
 
+def parse_token(response):
+    try:
+        soup = BeautifulSoup(response.text, 'lxml')
+        token = soup.find('input', {'name': 'authenticity_token'})['value']
+        return token
+    except:
+        return False
+
 def collect_candies(id, csrf_token, request_session, headers):
     # отправляю запрос на сбор конфет
     data = {
@@ -57,6 +65,57 @@ def collect_candies(id, csrf_token, request_session, headers):
         print(f'new balance: {balance} candies.')
     else:
         print(f'GG.')
+
+def get_reward(link, session, headers):
+
+    # получаем токен
+    response = session.get(link, headers=headers)
+    token = parse_token(response)
+    print(token)
+    # если токен получен
+    if token != False:
+
+        # получем действие
+        soup = BeautifulSoup(response.text, 'lxml')
+        action = soup.findAll('form', {'class': 'button_to'})[1]['action']
+
+        # получаем название предмета
+        title = soup.find('div', {'class': 'text-lg-2xl text-xl pl-1 font-weight-bold'})
+        data = {
+            'authenticity_token': token,
+        }
+
+        # отправляем запрос покупки реварда
+        buy_response = session.post(url="https://www.coingecko.com/"+action, data=data,
+                                     headers=headers)
+        if buy_response.ok:
+            print(f'successfully bought.', end=' ')
+            return title.text
+        else:
+            print(f'GG.')
+            return False
+    else:
+        print(f'GG.')
+        return False
+
+def get_promo(title, session, headers):
+    response = session.get("https://www.coingecko.com/account/my-rewards?locale=en", headers=headers)
+    soup = BeautifulSoup(response.text, 'lxml')
+
+    # получаем список полученных наград
+    rewards = soup.findAll('div', {'class': 'ml-3 mr-md-3 ml-lg-4 mb-3 mr-lg-1 voucher-card-section'})
+    for reward in rewards:
+
+        # ищем ссылку на награду по названию покупки
+        if title in reward.contents[3].text:
+
+            # достаём промо
+            href = reward.contents[1].contents[1]['href']
+            response = session.get("https://www.coingecko.com/" + href, headers=headers)
+            soup = BeautifulSoup(response.text, 'lxml')
+            promo = soup.find('input', {'class': 'form-control font-semibold'})['value']
+            print(f'promo: {promo}.')
+            break
 
 #Action 1
 def start_bot(id):
@@ -169,6 +228,65 @@ def update():
     else:
         print("Вы ввели неверное значение")
 
+#Action 5
+def buy(id):
+    link = input('Введите ссылку на желанный товар: ')
+    while True:
+        # Получаем данные прокси
+        try:
+            hostname = db.check_abuse_db(id=id).fetchone()[4]
+            port = db.check_abuse_db(id=id).fetchone()[5]
+            proxy_username = db.check_abuse_db(id=id).fetchone()[6]
+            proxy_password = db.check_abuse_db(id=id).fetchone()[7]
+        except:
+            print(f'[{datetime.datetime.now().strftime("%H:%M:%S")}] Трата конфет завершена.')
+            print('================================================================================')
+            break
+        proxy = {
+            'http': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}',
+            'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
+        }
+
+        # генерируем фейковый юзер-агент
+        user = fake_useragent.UserAgent().random
+        headers = {
+            'user-agent': user
+        }
+
+        # создаём сессию и подключаем прокси
+        request_session = requests.Session()
+        request_session.proxies = proxy
+        try:
+            # получаем данные
+            login = db.check_abuse_db(id=id).fetchone()[1]
+            password = db.check_abuse_db(id=id).fetchone()[2]
+            # выполняем логин
+            if coingecko_login(request_session=request_session, login=login, password=password, headers=headers):
+                time.sleep(seconds_to_sleep)
+
+                # получаем баланс
+                balance = db.check_abuse_db(id=id).fetchone()[3]
+                print('Баланс на аккаунте №' + str(id) + ' = ' + str(balance))
+                time.sleep(seconds_to_sleep)
+
+                # покупаем предмет
+                title_result = get_reward(link=link, session=request_session, headers=headers)
+                if title_result != False:
+                    # получаем купленный предмет: ссылка или код
+                    get_promo(title=title_result, session=request_session, headers=headers)
+
+
+            else:
+                print(f'something went wrong with [{login}].')
+
+            # пауза между аккаунтами от 3 до 10 минут
+        except:
+            print(f'something2 went wrong with [{login}].')
+
+        id += 1
+
+    print(f'we got all of rewards.')
+
 #Main
 def main():
 
@@ -178,7 +296,7 @@ def main():
         print("2) Добавить аккаунт")
         print("3) Посмотреть балансы на аккаунтах")
         print("4) Изменить данные аккаунта")
-        print('5) Общие настройки')
+        print('5) Потратить конфетки')
         print("6) Завершить работу")
         print("Для выбора функции требуется ввести её номер")
         print('')
@@ -193,6 +311,8 @@ def main():
         elif cmd == "4":
             update()
         elif cmd == "5":
+            buy(id=id)
+        elif cmd == "6":
             break
         else:
             print("Вы ввели не правильное значение")
