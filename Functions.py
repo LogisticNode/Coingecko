@@ -58,20 +58,24 @@ def collect_candies(id, csrf_token, request_session, headers):
         # получаю новый баланс
         balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en', headers=headers)
         soup = BeautifulSoup(balance_request.text, 'lxml')
-        balance = soup.find('div', {'data-target': 'points.balance'}).text
-        Total = str(balance)
-        db.update_amount(data=Total, id=id)
+        balance1 = soup.find('div', {'data-target': 'points.balance'}).text
+        Total1 = str(balance1)
+        db.update_amount(data=Total1, id=id)
         db.commit()
-        print(f'new balance: {balance} candies.')
+        print(f'new balance: {balance1} candies.')
     else:
+        balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en', headers=headers)
+        soup = BeautifulSoup(balance_request.text, 'lxml')
+        balance2 = soup.find('div', {'data-target': 'points.balance'}).text
+        Total2 = str(balance2)
+        db.update_amount(data=Total2, id=id)
+        db.commit()
         print(f'GG.')
-
 def get_reward(link, session, headers):
 
     # получаем токен
     response = session.get(link, headers=headers)
     token = parse_token(response)
-    print(token)
     # если токен получен
     if token != False:
 
@@ -275,13 +279,21 @@ def buy(id):
                     # получаем купленный предмет: ссылка или код
                     get_promo(title=title_result, session=request_session, headers=headers)
 
-
+                    # обновляем количество конфет
+                    balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en',
+                                                          headers=headers)
+                    soup = BeautifulSoup(balance_request.text, 'lxml')
+                    balance = soup.find('div', {'data-target': 'points.balance'}).text
+                    Total = str(balance)
+                    db.update_amount(data=Total, id=id)
+                    db.commit()
+                    print('Оставшиеся конфеты на аккаунте №' + str(id) + ' = ' + str(Total))
             else:
                 print(f'something went wrong with [{login}].')
 
             # пауза между аккаунтами от 3 до 10 минут
         except:
-            print(f'something2 went wrong with [{login}].')
+            print(f'something went wrong with [{login}].')
 
         id += 1
 
