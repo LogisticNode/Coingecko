@@ -12,8 +12,6 @@ import fake_useragent
 import random
 
 #Data
-url = 'https://www.coingecko.com/account/sign_in?locale=ru'
-candy_url = 'https://www.coingecko.com/account/candy/daily_check_in?locale=ru'
 id = 1
 seconds_to_sleep = 5
 
