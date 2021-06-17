@@ -183,8 +183,7 @@ def start_bot(id):
 
         # Собираем конфеты
         collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
-        time.sleep(random.randint(5, 15))
-        print(f'[{get_time()}] >>' + ' Ошибка на аккаунте №' + str(id) + ' / Проверьте корректность ведённых данных')
+        time.sleep(random.randint(5, 15)
 
         id += 1
 
