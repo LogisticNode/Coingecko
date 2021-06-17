@@ -49,6 +49,7 @@ def parse_token(response):
         token = soup.find('input', {'name': 'authenticity_token'})['value']
         return token
     except:
+        print('Не удалось получить токен для покупки')
         return False
 
 def collect_candies(id, csrf_token, request_session, headers):
