@@ -64,19 +64,17 @@ def collect_candies(id, csrf_token, request_session, headers):
             # получаю новый баланс
             balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en', headers=headers)
             soup = BeautifulSoup(balance_request.text, 'lxml')
-            balance1 = soup.find('div', {'data-target': 'points.balance'}).text
-            Total1 = str(balance1)
-            db.update_amount(data=Total1, id=id)
+            balance = soup.find('div', {'data-target': 'points.balance'}).text
+            db.update_amount(data=str(balance), id=id)
             db.commit()
-            print(f'Баланс: {balance1} конфет.')
+            print(f'Баланс: {balance} конфет.')
         else:
             balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en', headers=headers)
             soup = BeautifulSoup(balance_request.text, 'lxml')
-            balance2 = soup.find('div', {'data-target': 'points.balance'}).text
-            Total2 = str(balance2)
-            db.update_amount(data=Total2, id=id)
+            balance = soup.find('div', {'data-target': 'points.balance'}).text
+            db.update_amount(data=str(balance), id=id)
             db.commit()
-            print(f'GG. При сборе конфет произошла ошибка.')
+            print(f'GG. При сборе конфет произошла ошибка. Баланс остался прежним: {balance} конфет.')
     except:
         print('GG. При сборе конфет произошла ошибка.')
 
