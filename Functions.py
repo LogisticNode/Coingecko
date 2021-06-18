@@ -139,7 +139,7 @@ def get_promo(title, session, headers):
 
 #Action 1
 def start_bot(id):
-    print('Бот запущен')
+    print('Запускаем сбор конфет')
     print('')
     while True:
         # Получаем данные прокси
