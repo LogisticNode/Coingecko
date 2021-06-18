@@ -423,6 +423,7 @@ def buy(id):
 def main():
 
     while True:
+        print()
         print("[ /// Coingecko Collect Bot /// ]")
         print()
         print("1) Запустить бота;")
