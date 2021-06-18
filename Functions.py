@@ -32,7 +32,7 @@ def coingecko_login(request_session, login, password, headers):
             print(f'[{get_time()}] >> GG.')
             return False
     except:
-        print('При входе в аккаунт произошла ошибка')
+        print('При входе в аккаунт произошла ошибка, проверьте корректность ведённых данных')
 
 def get_token(request_session, headers):
     balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en', headers=headers)
@@ -183,7 +183,7 @@ def start_bot(id):
 
         # Собираем конфеты
         collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
-        time.sleep(random.randint(5, 15)
+        time.sleep(random.randint(5, 15))
 
         id += 1
 
