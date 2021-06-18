@@ -205,14 +205,14 @@ def unlim_bot(id):
                 print(f'[{get_time()}] >> Сбор конфет - круг #{loop} пройден.')
                 print()
 
-                length = id
+                length = id - 1
                 # вычисляем максимальную длительность круга в минутах
                 max_time_for_loop = length * 3
                 # получаем свободное от 3 обязательных кругов время в минутах
                 free_time = 24 * 60 - max_time_for_loop * 3
                 # получаем время для 1 отдыха
                 sleep_time = int(free_time/3)
-                time.sleep(random.randint(int(sleep_time * 0.7), int(sleep_time * 1.3)))
+                time.sleep(random.randint(int(sleep_time * 0.7 * 60), int(sleep_time * 1.3 * 60)))
                 break
 
             proxy = {
@@ -270,14 +270,14 @@ def add_user():
     try:
         db.add_user_coingecko(Email=Email, Password=Password, Host=Host, Port=Port, Proxy_username=Proxy_username, Proxy_password=Proxy_password)
     except:
-        print('Что-то пошло не так')
+        print('Что-то пошло не так.')
 
 #Action 4
 def report():
     try:
         db.report()
     except:
-        print('Что-то пошло не так')
+        print('Что-то пошло не так.')
 
 #Action 5
 def update():
