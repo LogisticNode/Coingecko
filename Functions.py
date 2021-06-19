@@ -170,16 +170,8 @@ def start_bot(id):
             }
 
             # Сохраняем юзер-агент в базу данных
-
-            try:
-                user = db.check_abuse_db(id=id).fetchone()[8]
-                if user is None:
-                    # Генерируем user-agent
-                    user = fake_useragent.UserAgent().random
-                    db.update_user_agent(data=user, id=id)
-                    db.commit()
-
-            except:
+            user = db.check_abuse_db(id=id).fetchone()[8]
+            if user is None:
                 # Генерируем user-agent
                 user = fake_useragent.UserAgent().random
                 db.update_user_agent(data=user, id=id)
@@ -194,16 +186,16 @@ def start_bot(id):
             request_session.proxies = proxy
 
             # Входим в аккаунт
-            coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
-            time.sleep(random.randint(5, 60))
+            if coingecko_login(request_session=request_session, login=login, password=password, headers=headers):
+                time.sleep(random.randint(5, 60))
 
-            # Получаем токен
-            token = get_token(request_session=request_session, headers=headers)
-            time.sleep(random.randint(5, 60))
+                # Получаем токен
+                token = get_token(request_session=request_session, headers=headers)
+                time.sleep(random.randint(5, 60))
 
-            # Собираем конфеты
-            collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
-            time.sleep(random.randint(5, 60))
+                # Собираем конфеты
+                collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
+                time.sleep(random.randint(5, 60))
         except:
             print(f'[{get_time()}] >> [{login}] GG. При генерации сессии произошла ошибка.')
 
@@ -236,16 +228,8 @@ def unlim_bot(id):
                 }
 
                 # Сохраняем юзер-агент в базу данных
-
-                try:
-                    user = db.check_abuse_db(id=id).fetchone()[8]
-                    if user is None:
-                        # Генерируем user-agent
-                        user = fake_useragent.UserAgent().random
-                        db.update_user_agent(data=user, id=id)
-                        db.commit()
-
-                except:
+                user = db.check_abuse_db(id=id).fetchone()[8]
+                if user is None:
                     # Генерируем user-agent
                     user = fake_useragent.UserAgent().random
                     db.update_user_agent(data=user, id=id)
@@ -260,16 +244,16 @@ def unlim_bot(id):
                 request_session.proxies = proxy
 
                 # Входим в аккаунт
-                coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
-                time.sleep(random.randint(5, 60))
+                if coingecko_login(request_session=request_session, login=login, password=password, headers=headers):
+                    time.sleep(random.randint(5, 60))
 
-                # Получаем токен
-                token = get_token(request_session=request_session, headers=headers)
-                time.sleep(random.randint(5, 60))
+                    # Получаем токен
+                    token = get_token(request_session=request_session, headers=headers)
+                    time.sleep(random.randint(5, 60))
 
-                # Собираем конфеты
-                collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
-                time.sleep(random.randint(5, 60))
+                    # Собираем конфеты
+                    collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
+                    time.sleep(random.randint(5, 60))
             except:
                 print(f'[{get_time()}] >> [{login}] GG. При генерации сессии произошла ошибка.')
 
