@@ -150,20 +150,25 @@ def start_bot(id):
             print(f'[{get_time()}] >> Сбор конфет - круг пройден.')
             print()
             break
-        proxy = {
-            'http': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}',
-            'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
-        }
 
-        # Генерируем user-agent
-        user = fake_useragent.UserAgent().random
-        headers = {
-            'user-agent': user
-        }
+        try:
+            proxy = {
+                'http': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}',
+                'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
+            }
 
-        # Cоздаём сессию
-        request_session = requests.Session()
-        request_session.proxies = proxy
+            # Генерируем user-agent
+            user = fake_useragent.UserAgent().random
+            headers = {
+                'user-agent': user
+            }
+
+            # Cоздаём сессию
+            request_session = requests.Session()
+            request_session.proxies = proxy
+        except:
+            print(f'[{get_time()}] >> GG. При генерации сессии произошла ошибка.')
+            break
 
         # Получаем данные от аккаунт
         try:
@@ -174,17 +179,20 @@ def start_bot(id):
             print(f'[{get_time()}] >> GG. При получении данных аккаунта произошла ошибка.')
             break
 
-        # Входим в аккаунт
-        coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
-        time.sleep(random.randint(5, 60))
+        try:
+            # Входим в аккаунт
+            coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
+            time.sleep(random.randint(5, 60))
 
-        # Получаем токен
-        token = get_token(request_session=request_session, headers=headers)
-        time.sleep(random.randint(5, 60))
+            # Получаем токен
+            token = get_token(request_session=request_session, headers=headers)
+            time.sleep(random.randint(5, 60))
 
-        # Собираем конфеты
-        collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
-        time.sleep(random.randint(5, 60))
+            # Собираем конфеты
+            collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
+            time.sleep(random.randint(5, 60))
+        except:
+            pass
 
         id += 1
 
@@ -214,21 +222,24 @@ def unlim_bot(id):
                 sleep_time = int(free_time/3)
                 time.sleep(random.randint(int(sleep_time * 0.7 * 60), int(sleep_time * 1.3 * 60)))
                 break
+            try:
+                proxy = {
+                    'http': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}',
+                    'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
+                }
 
-            proxy = {
-                'http': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}',
-                'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
-            }
+                # Генерируем user-agent
+                user = fake_useragent.UserAgent().random
+                headers = {
+                    'user-agent': user
+                }
 
-            # Генерируем user-agent
-            user = fake_useragent.UserAgent().random
-            headers = {
-                'user-agent': user
-            }
-
-            # Cоздаём сессию
-            request_session = requests.Session()
-            request_session.proxies = proxy
+                # Cоздаём сессию
+                request_session = requests.Session()
+                request_session.proxies = proxy
+            except:
+                print(f'[{get_time()}] >> GG. При генерации сессии произошла ошибка.')
+                break
 
             # Получаем данные от аккаунт
             try:
@@ -239,18 +250,20 @@ def unlim_bot(id):
                 print(f'[{get_time()}] >> GG. При получении данных аккаунта произошла ошибка.')
                 break
 
-            # Входим в аккаунт
-            coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
-            time.sleep(random.randint(5, 60))
+            try:
+                # Входим в аккаунт
+                coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
+                time.sleep(random.randint(5, 60))
 
-            # Получаем токен
-            token = get_token(request_session=request_session, headers=headers)
-            time.sleep(random.randint(5, 60))
+                # Получаем токен
+                token = get_token(request_session=request_session, headers=headers)
+                time.sleep(random.randint(5, 60))
 
-            # Собираем конфеты
-            collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
-            time.sleep(random.randint(5, 60))
-
+                # Собираем конфеты
+                collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
+                time.sleep(random.randint(5, 60))
+            except:
+                pass
             id += 1
         id = 1
         loop += 1
