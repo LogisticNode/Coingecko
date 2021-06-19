@@ -192,11 +192,7 @@ def start_bot(id):
             # Cоздаём сессию
             request_session = requests.Session()
             request_session.proxies = proxy
-        except:
-            print(f'[{get_time()}] >> GG. При генерации сессии произошла ошибка.')
-            break
 
-        try:
             # Входим в аккаунт
             coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
             time.sleep(random.randint(5, 60))
@@ -209,7 +205,7 @@ def start_bot(id):
             collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
             time.sleep(random.randint(5, 60))
         except:
-            pass
+            print(f'[{get_time()}] >> [{login}] GG. При генерации сессии произошла ошибка.')
 
         id += 1
 
@@ -231,9 +227,7 @@ def unlim_bot(id):
                 print()
                 print(f'[{get_time()}] >> Сбор конфет - круг #{loop} пройден.')
                 print()
-
                 sleep_between_loop(id)
-
                 break
             try:
                 proxy = {
@@ -264,11 +258,7 @@ def unlim_bot(id):
                 # Cоздаём сессию
                 request_session = requests.Session()
                 request_session.proxies = proxy
-            except:
-                print(f'[{get_time()}] >> GG. При генерации сессии произошла ошибка.')
-                break
 
-            try:
                 # Входим в аккаунт
                 coingecko_login(request_session=request_session, login=login, password=password, headers=headers)
                 time.sleep(random.randint(5, 60))
@@ -281,7 +271,8 @@ def unlim_bot(id):
                 collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
                 time.sleep(random.randint(5, 60))
             except:
-                pass
+                print(f'[{get_time()}] >> [{login}] GG. При генерации сессии произошла ошибка.')
+
             id += 1
         id = 1
         loop += 1
