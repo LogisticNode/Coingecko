@@ -4,6 +4,7 @@ from DataBase import Sqlighter
 
 db = Sqlighter('DataBase.db')
 
+
 #Requests
 from bs4 import BeautifulSoup
 from lxml import html
@@ -13,10 +14,7 @@ import random
 
 #Data
 id = 1
-seconds_to_sleep = 5
 
 #Beautiful
 import datetime
 import time
-
-# ПРАВКА ОТ РАМАНАВА
