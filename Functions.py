@@ -130,7 +130,7 @@ def get_promo(title, session, headers):
                 response = session.get("https://www.coingecko.com/" + href, headers=headers)
                 soup = BeautifulSoup(response.text, 'lxml')
                 promo = soup.find('input', {'class': 'form-control font-semibold'})['value']
-                print(f'promo: {promo}.')
+                print(f'Код: {promo}.', end=' ')
                 break
     except:
         print('GG. При получении промокода на товар произошла ошибка.')
@@ -197,7 +197,7 @@ def start_bot(id):
                 collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
                 time.sleep(random.randint(5, 60))
         except:
-            print(f'[{get_time()}] >> [{login}] GG. При генерации сессии произошла ошибка.')
+            print(f'[{get_time()}] >> [{login}] >> GG. При генерации сессии произошла ошибка.')
 
         id += 1
 
@@ -255,7 +255,7 @@ def unlim_bot(id):
                     collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
                     time.sleep(random.randint(5, 60))
             except:
-                print(f'[{get_time()}] >> [{login}] GG. При генерации сессии произошла ошибка.')
+                print(f'[{get_time()}] >> [{login}] >> GG. При генерации сессии произошла ошибка.')
 
             id += 1
         id = 1
@@ -360,17 +360,21 @@ def update():
 def buy(id):
     link = input('Введите ссылку на желанный товар: ')
     while True:
+
         # Получаем данные прокси
         try:
+            login = db.check_abuse_db(id=id).fetchone()[1]
+            password = db.check_abuse_db(id=id).fetchone()[2]
             hostname = db.check_abuse_db(id=id).fetchone()[4]
             port = db.check_abuse_db(id=id).fetchone()[5]
             proxy_username = db.check_abuse_db(id=id).fetchone()[6]
             proxy_password = db.check_abuse_db(id=id).fetchone()[7]
         except:
             print()
-            print(f'[{datetime.datetime.now().strftime("%H:%M:%S")}] Трата конфет завершена.')
+            print(f'[{get_time()}] >> Трата конфет завершена.')
             print()
             break
+
         try:
             proxy = {
                 'http': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}',
@@ -387,39 +391,36 @@ def buy(id):
             request_session = requests.Session()
             request_session.proxies = proxy
 
-            # получаем данные
-            login = db.check_abuse_db(id=id).fetchone()[1]
-            password = db.check_abuse_db(id=id).fetchone()[2]
             # выполняем логин
             if coingecko_login(request_session=request_session, login=login, password=password, headers=headers):
-                time.sleep(seconds_to_sleep)
+                time.sleep(random.randint(2, 5))
 
                 # получаем баланс
                 balance = db.check_abuse_db(id=id).fetchone()[3]
-                print('Баланс на аккаунте №' + str(id) + ' = ' + str(balance))
-                time.sleep(seconds_to_sleep)
+                print(f'[{get_time()}] >> [{login}] >> Успешный логин. Баланс: {str(balance)}.')
+                time.sleep(random.randint(2, 5))
 
                 # покупаем предмет
-                title_result = get_reward(link=link, session=request_session, headers=headers)
-                if title_result != False:
+                title = get_reward(link=link, session=request_session, headers=headers)
+
+                if title != False:
                     # получаем купленный предмет: ссылка или код
-                    get_promo(title=title_result, session=request_session, headers=headers)
+                    get_promo(title=title, session=request_session, headers=headers)
 
                     # обновляем количество конфет
                     balance_request = request_session.get('https://www.coingecko.com/account/candy?locale=en',
                                                           headers=headers)
                     soup = BeautifulSoup(balance_request.text, 'lxml')
                     balance = soup.find('div', {'data-target': 'points.balance'}).text
-                    Total = str(balance)
-                    db.update_amount(data=Total, id=id)
+                    db.update_amount(data=str(balance), id=id)
                     db.commit()
-                    print('Оставшиеся конфеты на аккаунте №' + str(id) + ' = ' + str(Total))
+                    print(f'Оставшиеся конфеты: {str(balance)}.')
             else:
                 pass
 
             # пауза между аккаунтами от 3 до 10 минут
         except:
-            print(f'Что-то пошло не так [{login}]')
+            print(f'[{get_time()}] >> [{login}] >> GG. При генерации сессии произошла ошибка.')
 
         id += 1
 
@@ -428,7 +429,11 @@ def main():
 
     while True:
         print()
-        print("[ /// Coingecko Collect Bot /// ]")
+        print("┌────────────────────────────────────────────────────┐ ")
+        print(" ///    ◁◁      Coingecko Collect Bot      ▷▷   ///  ")
+        print(" ///    ◁◁    by Logistic & cyberomanov    ▷▷   ///  ")
+        print(" ///    ◁◁             v1.0.0              ▷▷   ///  ")
+        print("└────────────────────────────────────────────────────┘")
         print()
         print("1) Запустить бота;")
         print("2) Запустить бесконечный сбор конфет (для серверов);")
