@@ -29,7 +29,7 @@ def coingecko_login(request_session, login, password, headers):
             print(f'[{get_time()}] >> [{login}] >> Успешный логин.', end=' ')
             return True
         else:
-            print(f'[{get_time()}] >> GG. При входе в аккаунт произошла ошибка.')
+            print(f'[{get_time()}] >> При входе в аккаунт произошла ошибка.')
             return False
     except:
         print(f'[{get_time()}] >> [{login}] >> При входе в аккаунт произошла ошибка.')
@@ -49,7 +49,7 @@ def parse_token(response):
         token = soup.find('input', {'name': 'authenticity_token'})['value']
         return token
     except:
-        print('GG. Не удалось получить токен для покупки.')
+        print('Не удалось получить токен для покупки.')
         return False
 
 def collect_candies(id, csrf_token, request_session, headers):
@@ -74,9 +74,9 @@ def collect_candies(id, csrf_token, request_session, headers):
             balance = soup.find('div', {'data-target': 'points.balance'}).text
             db.update_amount(data=str(balance), id=id)
             db.commit()
-            print(f'GG. При сборе конфет произошла ошибка. Баланс остался прежним: {balance} конфет.')
+            print(f'При сборе конфет произошла ошибка. Баланс остался прежним: {balance} конфет.')
     except:
-        print('GG. При сборе конфет произошла ошибка.')
+        print('При сборе конфет произошла ошибка.')
 
 def get_reward(link, session, headers):
     try:
@@ -104,13 +104,13 @@ def get_reward(link, session, headers):
                 print(f'Купил {title}.', end=' ')
                 return title.text
             else:
-                print(f'GG. При покупке произошла ошибка.')
+                print(f'При покупке произошла ошибка.')
                 return False
         else:
-            print(f'GG. При покупке произошла ошибка.')
+            print(f'При покупке произошла ошибка.')
         return False
     except:
-        print('GG. При покупке произошла ошибка.')
+        print('При покупке произошла ошибка.')
 
 def get_promo(title, session, headers):
     try:
@@ -133,7 +133,7 @@ def get_promo(title, session, headers):
                 print(f'Код: {promo}.', end=' ')
                 break
     except:
-        print('GG. При получении промокода на товар произошла ошибка.')
+        print('При получении промокода на товар произошла ошибка.')
 
 def sleep_between_loop(id):
     length = id - 1
@@ -197,7 +197,7 @@ def start_bot(id):
                 collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
                 time.sleep(random.randint(5, 60))
         except:
-            print(f'[{get_time()}] >> [{login}] >> GG. При генерации сессии произошла ошибка.')
+            print(f'[{get_time()}] >> [{login}] >> При генерации сессии произошла ошибка.')
 
         id += 1
 
@@ -255,7 +255,7 @@ def unlim_bot(id):
                     collect_candies(id=id, csrf_token=token, request_session=request_session, headers=headers)
                     time.sleep(random.randint(5, 60))
             except:
-                print(f'[{get_time()}] >> [{login}] >> GG. При генерации сессии произошла ошибка.')
+                print(f'[{get_time()}] >> [{login}] >> При генерации сессии произошла ошибка.')
 
             id += 1
         id = 1
@@ -263,18 +263,15 @@ def unlim_bot(id):
 
 #Action 3
 def add_user():
+    db.create_table_abuse()
+    email = str(input('Введите почту: '))
+    password = str(input('Введите пароль: '))
+    host = str(input('Введите ip прокси: '))
+    port = str(input('Введите порт прокси: '))
+    proxy_username = str(input('Введите логин прокси: '))
+    proxy_password = str(input('Введите пароль для прокси: '))
     try:
-        db.create_table_abuse()
-    except:
-        print('Не удалось создать таблицу в базе данных, проверьте её наличие в папке/её название в Config.py')
-    Email = str(input('Введите почту: '))
-    Password = str(input('Введите пароль: '))
-    Host = str(input('Введите ip прокси: '))
-    Port = str(input('Введите порт прокси: '))
-    Proxy_username = str(input('Введите логин прокси: '))
-    Proxy_password = str(input('Введите пароль для прокси: '))
-    try:
-        db.add_user_coingecko(Email=Email, Password=Password, Host=Host, Port=Port, Proxy_username=Proxy_username, Proxy_password=Proxy_password)
+        db.add_user_coingecko(Email=email, Password=password, Host=host, Port=port, Proxy_username=proxy_username, Proxy_password=proxy_password)
     except:
         print('Что-то пошло не так.')
 
@@ -420,7 +417,7 @@ def buy(id):
 
             # пауза между аккаунтами от 3 до 10 минут
         except:
-            print(f'[{get_time()}] >> [{login}] >> GG. При генерации сессии произошла ошибка.')
+            print(f'[{get_time()}] >> [{login}] >> При генерации сессии произошла ошибка.')
 
         id += 1
 
@@ -428,21 +425,18 @@ def buy(id):
 def main():
 
     while True:
-        print()
-        print("┌────────────────────────────────────────────────────┐ ")
+        print("\n┌────────────────────────────────────────────────────┐ ")
         print(" ///    <<      Coingecko Collect Bot      >>   ///  ")
         print(" ///    <<    by Logistic & cyberomanov    >>   ///  ")
         print(" ///    <<             v1.0.0              >>   ///  ")
-        print("└────────────────────────────────────────────────────┘")
-        print()
+        print("└────────────────────────────────────────────────────┘\n")
         print("1) Запустить бота;")
         print("2) Запустить бесконечный сбор конфет (для серверов);")
         print("3) Добавить аккаунт;")
         print("4) Посмотреть балансы на аккаунтах;")
         print("5) Изменить данные аккаунта;")
         print("6) Потратить конфетки;")
-        print("7) Завершить работу.")
-        print()
+        print("7) Завершить работу.\n")
         print("Для выбора функции требуется ввести её номер.", end=' ')
         cmd = input("Введите номер функции: ")
 
@@ -450,9 +444,7 @@ def main():
             print()
             start_bot(id=id)
         elif cmd == "2":
-            print()
-            print("Запущен бесконечный сбор конфет: ")
-            print()
+            print("\nЗапущен бесконечный сбор конфет:\n")
             unlim_bot(id=id)
         elif cmd == "3":
             print()
@@ -469,6 +461,4 @@ def main():
         elif cmd == "7":
             break
         else:
-            print()
-            print("Вы ввели не правильное значение.")
-            print()
+            print("\nВы ввели не правильное значение.\n")
