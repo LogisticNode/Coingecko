@@ -82,24 +82,22 @@ class Sqlighter():
 
     def report(self):
         """Выводим все аккаунты и их балансы"""
+        summ = 0
         with self.connection:
             for data in self.cursor.execute('SELECT * FROM Coingecko'):
-                print('Balance of account № ' + str(data[0]) + ' - ' + str(data[3]))
+                print(f'[{str(data[1])}] >> Баланс: {str(data[3])}.')
+                summ += data[3]
+        print(f'\nСумма конфет на всех аккаунтах: {str(summ)}.')
 
-    def report_all(self):
-        summ = 0
-        '''Выводим сумму всех конфет'''
-        for data in self.cursor.execute('SELECT * FROM Coingecko'):
-            summ += data[2]
-        print('Сумма конфет на всех аккаунтах - ' + str(summ))
+
 
 ########################################################################################################################
 
-    def add_user_coingecko(self, Email, Password, Host, Port, Proxy_username, Proxy_password):
+    def add_user_coingecko(self, email, password, host, port, proxy_username, proxy_password):
         """Добавляем данные в таблицу Coingecko"""
-        Amount = 0
+        amount = 0
         with self.connection:
-            self.cursor.execute(f'INSERT INTO Coingecko (Email, Password, Amount, Host, Port, Proxy_username, Proxy_password) VALUES(?, ?, ?, ?, ?, ?, ?)', (Email, Password, Amount, Host, Port, Proxy_username, Proxy_password))
+            self.cursor.execute(f'INSERT INTO Coingecko (Email, Password, Amount, Host, Port, Proxy_username, Proxy_password) VALUES(?, ?, ?, ?, ?, ?, ?)', (email, password, amount, host, port, proxy_username, proxy_password))
 
 ########################################################################################################################
 ########################################################################################################################
