@@ -64,6 +64,10 @@ class Sqlighter():
         with self.connection:
             return self.cursor.execute(f'UPDATE Coingecko SET Proxy_password=? WHERE id={id}', (data,))
 
+    def update_user_agent(self, data, id):
+        """Обновляем данные в таблице"""
+        with self.connection:
+            return self.cursor.execute(f'UPDATE Coingecko SET User_agent=? WHERE id={id}', (data,))
 ########################################################################################################################
 
     def get_max_accounts(self):
@@ -111,5 +115,6 @@ class Sqlighter():
                                           Host TEXT,
                                           Port TEXT,
                                           Proxy_username TEXT,
-                                          Proxy_password TEXT
-                                          )""");
+                                          Proxy_password TEXT,
+                                          User_agent TEXT
+                                          )""")
