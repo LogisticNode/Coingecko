@@ -135,12 +135,24 @@ def get_promo(title, session, headers):
     except:
         print('GG. При получении промокода на товар произошла ошибка.')
 
+def sleep_between_loop(id):
+    length = id - 1
+    # вычисляем максимальную длительность круга в минутах
+    max_time_for_loop = length * 3
+    # получаем свободное от 3 обязательных кругов время в минутах
+    free_time = 24 * 60 - max_time_for_loop * 3
+    # получаем время для 1 отдыха
+    sleep_time = int(free_time / 3)
+    time.sleep(random.randint(int(sleep_time * 0.7 * 60), int(sleep_time * 1.3 * 60)))
+
 #Action 1
 def start_bot(id):
 
     while True:
         # Получаем данные прокси
         try:
+            login = db.check_abuse_db(id=id).fetchone()[1]
+            password = db.check_abuse_db(id=id).fetchone()[2]
             hostname = db.check_abuse_db(id=id).fetchone()[4]
             port = db.check_abuse_db(id=id).fetchone()[5]
             proxy_username = db.check_abuse_db(id=id).fetchone()[6]
@@ -157,8 +169,22 @@ def start_bot(id):
                 'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
             }
 
-            # Генерируем user-agent
-            user = fake_useragent.UserAgent().random
+            # Сохраняем юзер-агент в базу данных
+
+            try:
+                user = db.check_abuse_db(id=id).fetchone()[8]
+                if user is None:
+                    # Генерируем user-agent
+                    user = fake_useragent.UserAgent().random
+                    db.update_user_agent(data=user, id=id)
+                    db.commit()
+
+            except:
+                # Генерируем user-agent
+                user = fake_useragent.UserAgent().random
+                db.update_user_agent(data=user, id=id)
+                db.commit()
+
             headers = {
                 'user-agent': user
             }
@@ -168,15 +194,6 @@ def start_bot(id):
             request_session.proxies = proxy
         except:
             print(f'[{get_time()}] >> GG. При генерации сессии произошла ошибка.')
-            break
-
-        # Получаем данные от аккаунт
-        try:
-
-            login = db.check_abuse_db(id=id).fetchone()[1]
-            password = db.check_abuse_db(id=id).fetchone()[2]
-        except:
-            print(f'[{get_time()}] >> GG. При получении данных аккаунта произошла ошибка.')
             break
 
         try:
@@ -204,6 +221,8 @@ def unlim_bot(id):
         while True:
             # Получаем данные прокси
             try:
+                login = db.check_abuse_db(id=id).fetchone()[1]
+                password = db.check_abuse_db(id=id).fetchone()[2]
                 hostname = db.check_abuse_db(id=id).fetchone()[4]
                 port = db.check_abuse_db(id=id).fetchone()[5]
                 proxy_username = db.check_abuse_db(id=id).fetchone()[6]
@@ -213,14 +232,8 @@ def unlim_bot(id):
                 print(f'[{get_time()}] >> Сбор конфет - круг #{loop} пройден.')
                 print()
 
-                length = id - 1
-                # вычисляем максимальную длительность круга в минутах
-                max_time_for_loop = length * 3
-                # получаем свободное от 3 обязательных кругов время в минутах
-                free_time = 24 * 60 - max_time_for_loop * 3
-                # получаем время для 1 отдыха
-                sleep_time = int(free_time/3)
-                time.sleep(random.randint(int(sleep_time * 0.7 * 60), int(sleep_time * 1.3 * 60)))
+                sleep_between_loop(id)
+
                 break
             try:
                 proxy = {
@@ -228,8 +241,22 @@ def unlim_bot(id):
                     'https': f'http://{proxy_username}:{proxy_password}@{hostname}:{port}'
                 }
 
-                # Генерируем user-agent
-                user = fake_useragent.UserAgent().random
+                # Сохраняем юзер-агент в базу данных
+
+                try:
+                    user = db.check_abuse_db(id=id).fetchone()[8]
+                    if user is None:
+                        # Генерируем user-agent
+                        user = fake_useragent.UserAgent().random
+                        db.update_user_agent(data=user, id=id)
+                        db.commit()
+
+                except:
+                    # Генерируем user-agent
+                    user = fake_useragent.UserAgent().random
+                    db.update_user_agent(data=user, id=id)
+                    db.commit()
+
                 headers = {
                     'user-agent': user
                 }
@@ -239,15 +266,6 @@ def unlim_bot(id):
                 request_session.proxies = proxy
             except:
                 print(f'[{get_time()}] >> GG. При генерации сессии произошла ошибка.')
-                break
-
-            # Получаем данные от аккаунт
-            try:
-
-                login = db.check_abuse_db(id=id).fetchone()[1]
-                password = db.check_abuse_db(id=id).fetchone()[2]
-            except:
-                print(f'[{get_time()}] >> GG. При получении данных аккаунта произошла ошибка.')
                 break
 
             try:
