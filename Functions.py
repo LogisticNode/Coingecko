@@ -430,9 +430,9 @@ def main():
     while True:
         print()
         print("┌────────────────────────────────────────────────────┐ ")
-        print(" ///    ◁◁      Coingecko Collect Bot      ▷▷   ///  ")
-        print(" ///    ◁◁    by Logistic & cyberomanov    ▷▷   ///  ")
-        print(" ///    ◁◁             v1.0.0              ▷▷   ///  ")
+        print(" ///    <<      Coingecko Collect Bot      >>   ///  ")
+        print(" ///    <<    by Logistic & cyberomanov    >>   ///  ")
+        print(" ///    <<             v1.0.0              >>   ///  ")
         print("└────────────────────────────────────────────────────┘")
         print()
         print("1) Запустить бота;")
