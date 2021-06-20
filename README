@@ -1,10 +1,15 @@
 
 
-1. Инструкция
-   1) Скачиваем файл и разархивируем.
-   2) Устанавливаем python v3.9.5 по ссылке -> https://www.python.org/downloads/ (При установке обязательно нажимаем на галочку "Environment variables" или "Переменные среды")
-   3) Открываем cmd в Windows и переходим к скачанной папке (cd + путь к папке)
-   4) Прописываем "pip3 install -r requirements.txt" в командной строке и ждём установки всех нужных библиотек
-   5) Запускаем код командой "py -3 main.py"
+Инструкция для Windows
 
+   1) Скачиваем и распаковываем архив.
+   2) Устанавливаем python v3.9.5 (https://www.python.org/downloads/). При установке обязательно нажимаем на галочку "Environment variables" или "Переменные среды".
+   3) Открываем CMD в Windows и переходим к скачанной папке: cd путь_к_папке, например, cd Desktop/coingecko
+   4) Выполняем команду "pip3 install -r requirements.txt" в командной строке и ждём установки всех нужных библиотек.
+   5) Запускаем код командой "py -3 main.py".
+   
+Инструкция для Linux
 
+   1) sudo apt-get update && sudo apt install python3-pip unzip python3 -y
+   2) wget https://github.com/LogisticNode/Coingecko/archive/refs/heads/main.zip && unzip main.zip && mv Coingecko-main coingecko && cd coingecko
+   3) python3 main.py
