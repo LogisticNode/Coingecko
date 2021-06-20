@@ -106,7 +106,7 @@ def get_reward(link, session, headers):
                 print(f'Предмет уже куплен, невозможно приобрести ещё.')
                 return False
         else:
-            print(f'При покупке произошла ошибка.')
+            print(f'Предмет уже куплен, невозможно приобрести ещё.')
         return False
     except:
         print('При покупке произошла ошибка.')
@@ -367,7 +367,8 @@ def update():
 
 #Action 6
 def buy(id):
-    while True:
+    close = False
+    while close == False:
         try:
             print()
             link = input('Введите ссылку на желанный товар: ')
@@ -419,10 +420,6 @@ def buy(id):
                                 if coingecko_login(request_session=request_session, login=login, password=password, headers=headers):
                                     time.sleep(random.randint(2, 5))
 
-                                    # получаем баланс
-                                    # balance = db.check_abuse_db(id=id).fetchone()[3]
-                                    # time.sleep(random.randint(2, 5))
-
                                     # покупаем предмет
                                     title = get_reward(link=link, session=request_session, headers=headers)
 
@@ -448,6 +445,7 @@ def buy(id):
 
                         id += 1
                     print(f'[{get_time()}] >> Трата конфет завершена.')
+                    close = True
                     break
                 else:
                     print("Попробуйте заново.\n")
