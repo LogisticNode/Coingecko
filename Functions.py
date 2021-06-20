@@ -154,7 +154,7 @@ def get_cost(link):
         cost = soup.find('span', {'class': 'font-weight-bold text-xl'})
         return cost.text
     except:
-        print('Ошибка при получении стоимости товара')
+        print('Ошибка при получении стоимости товара. Возможно, ссылка некорректна.')
 
 
 #Action 1
