@@ -89,8 +89,14 @@ class Sqlighter():
                 summ += data[3]
         print(f'\nСумма конфет на всех аккаунтах: {str(summ)}.')
 
-
-
+    def get_enough_balance(self, price):
+        """Выводим количество аккаунтов с достаточным балансом"""
+        summ = 0
+        with self.connection:
+            for data in self.cursor.execute('SELECT * FROM Coingecko'):
+                if int(data[3]) > price:
+                    summ += 1
+        return summ
 ########################################################################################################################
 
     def add_user_coingecko(self, email, password, host, port, proxy_username, proxy_password):
