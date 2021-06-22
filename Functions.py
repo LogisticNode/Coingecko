@@ -283,7 +283,7 @@ def add_user():
     proxy_username = str(input('Введите логин прокси: '))
     proxy_password = str(input('Введите пароль для прокси: '))
     try:
-        db.add_user_coingecko(Email=email, Password=password, Host=host, Port=port, Proxy_username=proxy_username, Proxy_password=proxy_password)
+        db.add_user_coingecko(email=email, password=password, host=host, port=port, proxy_username=proxy_username, proxy_password=proxy_password)
     except:
         print('Что-то пошло не так.')
 
