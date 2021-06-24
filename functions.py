@@ -256,6 +256,7 @@ class Coingecko:
         """Инициализация сессии"""
         try:
             # Вытаскиваем данные из БД
+            self.id = id
             self.login = db.check_abuse_db(id=id).fetchone()[1]
             self.password = db.check_abuse_db(id=id).fetchone()[2]
             self.hostname = db.check_abuse_db(id=id).fetchone()[4]
@@ -263,19 +264,8 @@ class Coingecko:
             self.proxy_username = db.check_abuse_db(id=id).fetchone()[6]
             self.proxy_password = db.check_abuse_db(id=id).fetchone()[7]
             self.headers = db.check_abuse_db(id=id).fetchone()[8]
-
-            if self.headers is None:
-                # Генерируем user-agent, если в БД пустой
-                while True:
-                    try:
-                        self.headers = fake_useragent.UserAgent().random
-                        break
-                    except:
-                        pass
-
-                db.update_user_agent(data=self.headers, id=id)
-                db.commit()
         except:
+            # Получаем данные из параметров 
             self.login = login
             self.password=password
             self.hostname=hostname
@@ -289,18 +279,19 @@ class Coingecko:
                 except:
                     pass
 
-
-
         # Генерируем сессию
-        self.proxy = {
-            'http': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}',
-            'https': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}'
-        }
+        self.session = requests.Session()
         self.headers = {
             'user-agent': self.headers
         }
-        self.session = requests.Session()
-        self.session.proxies = self.proxy
+
+        # Настраиваем прокси
+        if not (self.hostname == '' or self.port == '' or self.proxy_username == '' or self.proxy_password == ''):
+            self.proxy = {
+                'http': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}',
+                'https': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}'
+            }
+            self.session.proxies = self.proxy
 
     def log_in(self):
         """Функция авторизации на сайте"""
@@ -407,7 +398,7 @@ class Coingecko:
                     balance_request = self.session.get(url=url, headers=self.headers)
                     soup = BeautifulSoup(balance_request.text, 'lxml')
                     balance = soup.find('div', {'data-target': 'points.balance'}).text
-                    db.update_amount(data=str(balance), id=id)
+                    db.update_amount(data=str(balance), id=self.id)
                     db.commit()
                     print(f'Баланс: {balance} конфет.')
                     sleep()
@@ -423,7 +414,7 @@ class Coingecko:
                 if balance_request.ok:
                     soup = BeautifulSoup(balance_request.text, 'lxml')
                     balance = soup.find('div', {'data-target': 'points.balance'}).text
-                    db.update_amount(data=str(balance), id=id)
+                    db.update_amount(data=str(balance), id=self.id)
                     db.commit()
                     print(f'Сегодня монеты уже собирались, баланс остался прежним: {balance} конфет.')
                     sleep()
