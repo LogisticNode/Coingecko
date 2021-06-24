@@ -41,14 +41,15 @@ def add_user():
         log_in_result = coingecko_session.log_in()
 
         # Если успех, то получаем баланс конфет
-        if log_in_result:
+        if log_in_result == True:
             get_balance_result = coingecko_session.get_balance()
             balance = get_balance_result[0]
             user_agent = get_balance_result[1]['user-agent']
             db.add_user_coingecko(email=email, password=password, host=host, port=port, proxy_username=proxy_username,
                                   proxy_password=proxy_password, amount=balance, user_agent=user_agent)
             print('\nАккаунт добавлен.')
-
+        else:
+            print('Введённые данные содержат ошибку, попробуйте ещё раз.')
     except:
         print('Что-то пошло не так.')
 
@@ -271,7 +272,7 @@ class Coingecko:
                         break
                     except:
                         pass
-                    
+
                 db.update_user_agent(data=self.headers, id=id)
                 db.commit()
         except:
