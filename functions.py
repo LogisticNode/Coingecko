@@ -50,7 +50,7 @@ def update():
     old_port = db.check_abuse_db(id=id).fetchone()[5]
     old_proxy_username = db.check_abuse_db(id=id).fetchone()[6]
     old_proxy_password = db.check_abuse_db(id=id).fetchone()[7]
-    print('1) Почта: ' + old_mail)
+    print('\n1) Почта: ' + old_mail)
     print('2) Пароль: ' + old_pass)
     print('3) Баланс: ' + str(amount))
     print('4) IP прокси: ' + old_host)
