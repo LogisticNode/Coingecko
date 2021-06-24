@@ -6,7 +6,7 @@ def get_time():
 
 def sleep():
     """Функция сна"""
-    time.sleep(random.randint(5, 60))
+    time.sleep(random.randint(5, 15))
 
 def sleep_between_loop(id):
     """Функция сна между кругами во время выполнения функции 'unlimited_collect'"""
@@ -30,8 +30,25 @@ def add_user():
     proxy_username = str(input('Введите логин прокси: '))
     proxy_password = str(input('Введите пароль для прокси: '))
     try:
-        db.add_user_coingecko(email=email, password=password, host=host, port=port, proxy_username=proxy_username, proxy_password=proxy_password)
-        print('\nАккаунт успешно добавлен.')
+
+        print('\nАккаунт будет добавлен после успешной проверки баланса...')
+        # id = db.get_id_by_email(email=email)
+
+        # Создаём экземпляр сессии, передавая порядковый номер аккаунта
+        coingecko_session = Coingecko(login=email, password=password, hostname=host, port=port, proxy_username=proxy_username, proxy_password=proxy_password)
+
+        # Получаем результат попытки логина
+        log_in_result = coingecko_session.log_in()
+
+        # Если успех, то получаем баланс конфет
+        if log_in_result:
+            get_balance_result = coingecko_session.get_balance()
+            balance = get_balance_result[0]
+            user_agent = get_balance_result[1]['user-agent']
+            db.add_user_coingecko(email=email, password=password, host=host, port=port, proxy_username=proxy_username,
+                                  proxy_password=proxy_password, amount=balance, user_agent=user_agent)
+            print('\nАккаунт добавлен.')
+
     except:
         print('Что-то пошло не так.')
 
@@ -232,9 +249,10 @@ def buy():
 class Coingecko:
     '''Класс Coingecko'''
 
-    def __init__(self, id):
-        """Инициализация сессии"""
+    def __init__(self, id=None, login=None, password=None, hostname=None, port=None,
+                 proxy_username=None, proxy_password=None):
 
+        """Инициализация сессии"""
         try:
             # Вытаскиваем данные из БД
             self.login = db.check_abuse_db(id=id).fetchone()[1]
@@ -244,26 +262,33 @@ class Coingecko:
             self.proxy_username = db.check_abuse_db(id=id).fetchone()[6]
             self.proxy_password = db.check_abuse_db(id=id).fetchone()[7]
             self.headers = db.check_abuse_db(id=id).fetchone()[8]
-            if self.headers is None:
 
+            if self.headers is None:
                 # Генерируем user-agent, если в БД пустой
                 self.headers = fake_useragent.UserAgent().random
                 db.update_user_agent(data=self.headers, id=id)
                 db.commit()
-
-            # Генерируем сессию
-            self.proxy = {
-                'http': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}',
-                'https': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}'
-            }
-            self.headers = {
-                'user-agent': self.headers
-            }
-            self.session = requests.Session()
-            self.session.proxies = self.proxy
         except:
-            pass
+            self.login = login
+            self.password=password
+            self.hostname=hostname
+            self.port=port
+            self.proxy_username=proxy_username
+            self.proxy_password=proxy_password
+            self.headers = fake_useragent.UserAgent().random
 
+
+
+        # Генерируем сессию
+        self.proxy = {
+            'http': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}',
+            'https': f'http://{self.proxy_username}:{self.proxy_password}@{self.hostname}:{self.port}'
+        }
+        self.headers = {
+            'user-agent': self.headers
+        }
+        self.session = requests.Session()
+        self.session.proxies = self.proxy
 
     def log_in(self):
         """Функция авторизации на сайте"""
@@ -325,6 +350,23 @@ class Coingecko:
         """Функция получения токена"""
         self.response = self.session.get(url=url, headers=self.headers)
         return self.__parse_token(self.response)
+
+    def get_balance(self):
+        """Функция проверки баланса"""
+        url = 'https://www.coingecko.com/account/candy?locale=en'
+
+        # Получаем баланс и обновляем значение в БД
+        balance_request = self.session.get(url=url, headers=self.headers)
+
+        # Проверяем ответ
+        if balance_request.ok:
+            soup = BeautifulSoup(balance_request.text, 'lxml')
+            balance = soup.find('div', {'data-target': 'points.balance'}).text
+            print(f'Баланс: {balance} конфет.')
+            return balance, self.headers
+        else:
+            print(f'При получении баланса произошла неизвестная ошибка.')
+
 
 
     def collect_candies(self):
