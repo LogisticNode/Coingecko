@@ -10,9 +10,20 @@
    
 Инструкция для Linux
 
-   1) sudo apt-get update && sudo apt install python3-pip unzip python3 -y
-   2) wget https://github.com/LogisticNode/Coingecko/archive/refs/heads/main.zip && unzip main.zip && mv Coingecko-main coingecko && cd coingecko
+   1) sudo apt-get update && sudo apt install python3-pip git tmux python3 -y
+   2) git clone https://github.com/LogisticNode/Coingecko.git && cd Coingecko
    3) pip3 install -r requirements.txt
-   4) python3 main.py
+   4) tmux new -s coingecko
+   5) python3 main.py
+   
+   Чтобы вернуться в сессию с ботом:
+      1) tmux attach -t coingecko
+   
+   Обновить бота:
+      1) tmux attach -t coingecko
+      2) Ctrl + C, чтобы остановить процесс
+      3) git fetch
+      4) git checkout vN.N
+      5) python3 main.py
 
 *Для того, чтобы добавить аккаунт без прокси, нужно при добавлении аккаунта в базу данных, оставить пустыми поля: ip прокси, порт прокси, логин прокси, пароль для прокси - просто прощёлкать 'Enter'. 
