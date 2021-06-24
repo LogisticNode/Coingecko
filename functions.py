@@ -148,7 +148,7 @@ def unlimited_collect():
             # Если круг окончен, то выходим из цикла
             if log_in_result == 'over':
                 print(f'\n[{get_time()}] >> Сбор конфет - круг #{loop} пройден.\n')
-                # sleep_between_loop(id=id)
+                sleep_between_loop(id=id)
                 break
 
             id += 1
