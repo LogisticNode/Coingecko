@@ -14,3 +14,5 @@
    2) wget https://github.com/LogisticNode/Coingecko/archive/refs/heads/main.zip && unzip main.zip && mv Coingecko-main coingecko && cd coingecko
    3) pip3 install -r requirements.txt
    4) python3 main.py
+
+*Для того, чтобы добавить аккаунт без прокси, нужно при добавлении аккаунта в базу данных (3) Добавить аккаунт;), оставить пустыми поля: ip прокси, порт прокси, логин прокси, пароль для прокси - просто прощёлкать 'Enter'. 
