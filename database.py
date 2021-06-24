@@ -1,5 +1,5 @@
-from Config import *
-
+from config import *
+from tabulate import tabulate
 
 class Sqlighter():
 
@@ -81,13 +81,21 @@ class Sqlighter():
 ########################################################################################################################
 
     def report(self):
-        """Выводим все аккаунты и их балансы"""
+        """Выводим информацию об аккаунтах"""
         summ = 0
+        headers = ['ID', 'Логин', 'Пароль', 'Прокси', 'Баланс']
+        table = []
         with self.connection:
             for data in self.cursor.execute('SELECT * FROM Coingecko'):
-                print(f'[{str(data[1])}] >> Баланс: {str(data[3])}.')
+                row = [str(data[0]), str(data[1]), str(data[2]),
+                       str(data[4]) + ':' + str(data[5]) + '@' + str(data[6]) + ':' + str(data[7]), str(data[3])]
+                table.append(row)
                 summ += data[3]
-        print(f'\nСумма конфет на всех аккаунтах: {str(summ)}.')
+
+        row = ['', '', '', 'Итого', str(data[3])]
+        table.append(row)
+
+        print(tabulate(table, headers, tablefmt="fancy_grid", numalign="center", stralign="center"))
 
     def get_enough_balance(self, price):
         """Выводим количество аккаунтов с достаточным балансом"""
@@ -104,6 +112,10 @@ class Sqlighter():
         amount = 0
         with self.connection:
             self.cursor.execute(f'INSERT INTO Coingecko (Email, Password, Amount, Host, Port, Proxy_username, Proxy_password) VALUES(?, ?, ?, ?, ?, ?, ?)', (email, password, amount, host, port, proxy_username, proxy_password))
+
+    def delete_row(self):
+        """Удаляем строку"""
+        pass
 
 ########################################################################################################################
 ########################################################################################################################
