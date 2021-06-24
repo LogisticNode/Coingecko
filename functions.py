@@ -265,7 +265,13 @@ class Coingecko:
 
             if self.headers is None:
                 # Генерируем user-agent, если в БД пустой
-                self.headers = fake_useragent.UserAgent().random
+                while True:
+                    try:
+                        self.headers = fake_useragent.UserAgent().random
+                        break
+                    except:
+                        pass
+                    
                 db.update_user_agent(data=self.headers, id=id)
                 db.commit()
         except:
@@ -275,7 +281,12 @@ class Coingecko:
             self.port=port
             self.proxy_username=proxy_username
             self.proxy_password=proxy_password
-            self.headers = fake_useragent.UserAgent().random
+            while True:
+                try:
+                    self.headers = fake_useragent.UserAgent().random
+                    break
+                except:
+                    pass
 
 
 
