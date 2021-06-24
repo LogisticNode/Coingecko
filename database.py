@@ -27,6 +27,12 @@ class Sqlighter():
         with self.connection:
             return self.cursor.execute(f"SELECT * FROM Coingecko where Id ={id}")
 
+    def get_id_by_email(self, email):
+        """Проверяем есть ли пользователь в базе"""
+        with self.connection:
+            for data in self.cursor.execute(f'SELECT Id FROM Coingecko where Email ={email}'):
+                return data
+
 ########################################################################################################################
 
     def update_email(self, data, id):
@@ -90,9 +96,9 @@ class Sqlighter():
                 row = [str(data[0]), str(data[1]), str(data[2]),
                        str(data[4]) + ':' + str(data[5]) + '@' + str(data[6]) + ':' + str(data[7]), str(data[3])]
                 table.append(row)
-                summ += data[3]
+                summ += int(data[3])
 
-        row = ['', '', '', 'Итого', str(data[3])]
+        row = ['', '', '', 'Итого', summ]
         table.append(row)
 
         print(tabulate(table, headers, tablefmt="fancy_grid", numalign="center", stralign="center"))
@@ -107,11 +113,10 @@ class Sqlighter():
         return summ
 ########################################################################################################################
 
-    def add_user_coingecko(self, email, password, host, port, proxy_username, proxy_password):
+    def add_user_coingecko(self, email, password, amount, host, port, proxy_username, proxy_password, user_agent):
         """Добавляем данные в таблицу Coingecko"""
-        amount = 0
         with self.connection:
-            self.cursor.execute(f'INSERT INTO Coingecko (Email, Password, Amount, Host, Port, Proxy_username, Proxy_password) VALUES(?, ?, ?, ?, ?, ?, ?)', (email, password, amount, host, port, proxy_username, proxy_password))
+            self.cursor.execute(f'INSERT INTO Coingecko (Email, Password, Amount, Host, Port, Proxy_username, Proxy_password, User_agent) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', (email, password, amount, host, port, proxy_username, proxy_password, user_agent))
 
     def delete_row(self):
         """Удаляем строку"""
