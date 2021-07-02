@@ -17,8 +17,29 @@ def sleep_between_loop(id):
     free_time = 24 * 60 - max_time_for_loop * 3
     # получаем время для 1 отдыха
     sleep_time = int(free_time / 3)
-    seconds = int(random.randint(int(sleep_time * 0.7 * 60), int(sleep_time * 1.3 * 60))/2)
+    seconds = int(random.randint(int(sleep_time * 0.7 * 75), int(sleep_time * 1.3 * 75))/2)
     time.sleep(seconds)
+
+def shuffle():
+    # получаем длину БД
+    length = 1
+    while True:
+        try:
+            # вытаскиваем данные из БД
+            login = db.check_abuse_db(id=length).fetchone()[1]
+            length += 1
+        except:
+            break
+
+    # генерируем случайный список индексов
+    list = []
+    for i in range(1, length):
+        list.append(i)
+
+    random.shuffle(list)
+    return list
+
+
 
 def add_user():
     """Функция добавления пользователя в базу данных"""
@@ -133,8 +154,11 @@ def unlimited_collect():
     """Функция неограниченного сбора конфет (для серверов)"""
     loop = 1
     while True:
-        id = 1
-        while True:
+        # перемешиваем индексы
+        list_of_id = shuffle()
+
+        # начинаем цикл сбора конфет
+        for id in list_of_id:
             # Создаём экземпляр сессии, передавая порядковый номер аккаунта
             coingecko_session = Coingecko(id=id)
 
@@ -143,21 +167,23 @@ def unlimited_collect():
 
             # Если успех, то собираем монеты
             if log_in_result:
+                sleep()
                 coingecko_session.collect_candies()
+                sleep()
 
             # Если круг окончен, то выходим из цикла
-            if log_in_result == 'over':
-                print(f'\n[{get_time()}] >> Сбор конфет - круг #{loop} пройден.\n')
-                sleep_between_loop(id=id)
-                break
 
-            id += 1
+        print(f'\n[{get_time()}] >> Сбор конфет - круг #{loop} пройден.\n')
+        sleep_between_loop(id=len(list_of_id))
         loop += 1
 
 def collect():
     """Функция сбора конфет один раз"""
-    id = 1
-    while True:
+    # перемешиваем индексы
+    list_of_id = shuffle()
+
+    # начинаем цикл сбора конфет
+    for id in list_of_id:
         # Создаём экземпляр сессии, передавая порядковый номер аккаунта
         coingecko_session = Coingecko(id=id)
 
@@ -166,14 +192,10 @@ def collect():
 
         # Если успех, то собираем монеты
         if log_in_result:
+            sleep()
             coingecko_session.collect_candies()
 
-        # Если круг окончен, то выходим из цикла
-        if log_in_result == 'over':
-            print(f'\n[{get_time()}] >> Сбор конфет - круг пройден.')
-            break
-
-        id += 1
+    print(f'\n[{get_time()}] >> Сбор конфет - круг пройден.')
 
 def get_cost(link):
     """Функция получения цены предмета по ссылке"""
@@ -202,6 +224,11 @@ def buy():
                     print()
                     # Если запрос валидный, запускаем покупку
                     if int(count) > 0 and int(count) <= db.get_enough_balance(price):
+                        print(f'[{get_time()}] >> Трата конфет началась.\n')
+                        f = open('rewards.txt', 'a')
+                        f.write(f'[{get_time()}]: трата конфет началась.\n'
+                                f'')
+                        f.close()
                         bought = 0
                         id = 1
                         while bought < int(count):
@@ -234,8 +261,13 @@ def buy():
                                         coingecko_session.get_promo(title=title)
                                         bought += 1
 
+
+
                             id += 1
-                        print(f'[{get_time()}] >> Трата конфет завершена.')
+                        print(f'\n[{get_time()}] >> Трата конфет завершена.')
+                        f = open('rewards.txt', 'a')
+                        f.write(f'\n\n[{get_time()}]: трата завершена.\n\n')
+                        f.close()
                         close = True
                         break
                     else:
@@ -265,7 +297,7 @@ class Coingecko:
             self.proxy_password = db.check_abuse_db(id=id).fetchone()[7]
             self.headers = db.check_abuse_db(id=id).fetchone()[8]
         except:
-            # Получаем данные из параметров 
+            # Получаем данные из параметров
             self.login = login
             self.password=password
             self.hostname=hostname
@@ -325,7 +357,7 @@ class Coingecko:
 
                 if error is None:
                     print(f'[{get_time()}] >> [{self.login}] >> Успешный логин.', end=' ')
-                    sleep()
+
                     return True
                 else:
                     print(f'[{get_time()}] >> [{self.login}] >> '
@@ -344,7 +376,6 @@ class Coingecko:
         try:
             soup = BeautifulSoup(response.text, 'lxml')
             token = soup.find('input', {'name': 'authenticity_token'})['value']
-            sleep()
             return token
         except:
             return False
@@ -474,7 +505,10 @@ class Coingecko:
                     response = self.session.get("https://www.coingecko.com/" + href, headers=self.headers)
                     soup = BeautifulSoup(response.text, 'lxml')
                     promo = soup.find('input', {'class': 'form-control font-semibold'})['value']
-                    print(f'Код: {promo}.', end=' ')
+                    print(f'Код: {promo}.')
+                    f = open('rewards.txt', 'a')
+                    f.write(f'\n{self.login}: {promo}.')
+                    f.close()
                     break
             try:
                 # обновляем количество конфет
@@ -489,6 +523,3 @@ class Coingecko:
                 pass
         except:
             print('При получении промокода на товар произошла ошибка.')
-
-
-
